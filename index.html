@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Jose Parreno Garcia" />
+
+
+<title>Data Exploration</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Basic Data Exploration</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Basic Data Exploration</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Data Exploration</h1>
+<h4 class="author"><em>Jose Parreno Garcia</em></h4>
+<h4 class="date"><em>February 2018</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#reading-data-from-csv"><span class="toc-section-number">1</span> Reading data from CSV</a><ul>
+<li><a href="#dataset-summary"><span class="toc-section-number">1.1</span> Dataset summary</a></li>
+<li><a href="#converting-data-types"><span class="toc-section-number">1.2</span> Converting data types</a></li>
+</ul></li>
+<li><a href="#detecting-missing-values"><span class="toc-section-number">2</span> Detecting missing values</a></li>
+<li><a href="#imputing-missing-values"><span class="toc-section-number">3</span> Imputing missing values</a></li>
+<li><a href="#exploring-and-visualizing-data"><span class="toc-section-number">4</span> Exploring and visualizing data</a></li>
+<li><a href="#predicting-passenger-survival"><span class="toc-section-number">5</span> Predicting Passenger Survival</a><ul>
+<li><a href="#ctree-algorithm---decision-tree"><span class="toc-section-number">5.1</span> cTree algorithm - Decision Tree</a></li>
+<li><a href="#svm"><span class="toc-section-number">5.2</span> SVM</a></li>
+</ul></li>
+<li><a href="#validating-prediction-power"><span class="toc-section-number">6</span> Validating Prediction Power</a><ul>
+<li><a href="#confusion-matrix"><span class="toc-section-number">6.1</span> Confusion matrix</a></li>
+<li><a href="#rocrauc"><span class="toc-section-number">6.2</span> ROCR/AUC</a></li>
+</ul></li>
+</ul>
+</div>
+
+<style>
+body {
+text-align: justify}
+
+</style>
+<p><br></p>
+<pre class="r"><code>library(knitr)</code></pre>
+<p><br></p>
+<p>We will look at:</p>
+<ul>
+<li>Reading data from CSV</li>
+<li>Converting data types</li>
+<li>Detecting missing values</li>
+<li>Imputing missing values</li>
+<li>Exploring and visualizing data</li>
+<li>Prediciting passenger survival with a decision tree</li>
+<li>Validation prediction power with confusion matrix</li>
+<li>Assessing performance with ROC curve</li>
+</ul>
+<div id="reading-data-from-csv" class="section level1">
+<h1><span class="header-section-number">1</span> Reading data from CSV</h1>
+<p>The data can be downloaded to a csv from Kaggle webpage. There are 2 main ways of reading data from files:</p>
+<ul>
+<li><strong>read.csv()</strong> function which comes with base R</li>
+<li><strong>fread()</strong> function which comes with the <strong>data.table</strong> package</li>
+</ul>
+<pre class="r"><code># Read the csv 
+train.data = read.csv(&quot;train.csv&quot;, na.strings = c(&quot;NA&quot;, &quot;&quot;))
+test.data = read.csv(&quot;test.csv&quot;, na.strings = c(&quot;NA&quot;, &quot;&quot;))</code></pre>
+<div id="dataset-summary" class="section level2">
+<h2><span class="header-section-number">1.1</span> Dataset summary</h2>
+<p>Using the <strong>str()</strong> function:</p>
+<ul>
+<li>We can see we have 891 records with 12 variables</li>
+<li>Most of the variables are numeric, but there are some which are factor variables. As an example, the <em>Name</em> variable contains up to 891 different levels!</li>
+</ul>
+<p>Using the <strong>summary()</strong> function:</p>
+<ul>
+<li>We clearly see there are NAs in the dataset</li>
+<li>The passengerID seems a correct ID column given that it starts with 1 and ends with 891, which matches the number of records in the dataframe</li>
+<li>Survived is currently catalogued as an <em>int</em>, but it seems this should be converted to a factor given the min and max values</li>
+</ul>
+<pre class="r"><code># Structure of the dataset
+str(train.data)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    891 obs. of  12 variables:
+##  $ PassengerId: int  1 2 3 4 5 6 7 8 9 10 ...
+##  $ Survived   : int  0 1 1 1 0 0 0 0 1 1 ...
+##  $ Pclass     : int  3 1 3 1 3 3 1 3 3 2 ...
+##  $ Name       : Factor w/ 891 levels &quot;Abbing, Mr. Anthony&quot;,..: 109 191 358 277 16 559 520 629 417 581 ...
+##  $ Sex        : Factor w/ 2 levels &quot;female&quot;,&quot;male&quot;: 2 1 1 1 2 2 2 2 1 1 ...
+##  $ Age        : num  22 38 26 35 35 NA 54 2 27 14 ...
+##  $ SibSp      : int  1 1 0 1 0 0 0 3 0 1 ...
+##  $ Parch      : int  0 0 0 0 0 0 0 1 2 0 ...
+##  $ Ticket     : Factor w/ 681 levels &quot;110152&quot;,&quot;110413&quot;,..: 524 597 670 50 473 276 86 396 345 133 ...
+##  $ Fare       : num  7.25 71.28 7.92 53.1 8.05 ...
+##  $ Cabin      : Factor w/ 147 levels &quot;A10&quot;,&quot;A14&quot;,&quot;A16&quot;,..: NA 82 NA 56 NA NA 130 NA NA NA ...
+##  $ Embarked   : Factor w/ 3 levels &quot;C&quot;,&quot;Q&quot;,&quot;S&quot;: 3 1 3 3 3 2 3 3 3 1 ...</code></pre>
+<pre class="r"><code># Summary
+summary(train.data)</code></pre>
+<pre><code>##   PassengerId       Survived          Pclass                                         Name         Sex           Age            SibSp           Parch             Ticket         Fare                Cabin     Embarked  
+##  Min.   :  1.0   Min.   :0.0000   Min.   :1.000   Abbing, Mr. Anthony                  :  1   female:314   Min.   : 0.42   Min.   :0.000   Min.   :0.0000   1601    :  7   Min.   :  0.00   B96 B98    :  4   C   :168  
+##  1st Qu.:223.5   1st Qu.:0.0000   1st Qu.:2.000   Abbott, Mr. Rossmore Edward          :  1   male  :577   1st Qu.:20.12   1st Qu.:0.000   1st Qu.:0.0000   347082  :  7   1st Qu.:  7.91   C23 C25 C27:  4   Q   : 77  
+##  Median :446.0   Median :0.0000   Median :3.000   Abbott, Mrs. Stanton (Rosa Hunt)     :  1                Median :28.00   Median :0.000   Median :0.0000   CA. 2343:  7   Median : 14.45   G6         :  4   S   :644  
+##  Mean   :446.0   Mean   :0.3838   Mean   :2.309   Abelson, Mr. Samuel                  :  1                Mean   :29.70   Mean   :0.523   Mean   :0.3816   3101295 :  6   Mean   : 32.20   C22 C26    :  3   NA&#39;s:  2  
+##  3rd Qu.:668.5   3rd Qu.:1.0000   3rd Qu.:3.000   Abelson, Mrs. Samuel (Hannah Wizosky):  1                3rd Qu.:38.00   3rd Qu.:1.000   3rd Qu.:0.0000   347088  :  6   3rd Qu.: 31.00   D          :  3             
+##  Max.   :891.0   Max.   :1.0000   Max.   :3.000   Adahl, Mr. Mauritz Nils Martin       :  1                Max.   :80.00   Max.   :8.000   Max.   :6.0000   CA 2144 :  6   Max.   :512.33   (Other)    :186             
+##                                                   (Other)                              :885                NA&#39;s   :177                                      (Other) :852                    NA&#39;s       :687</code></pre>
+</div>
+<div id="converting-data-types" class="section level2">
+<h2><span class="header-section-number">1.2</span> Converting data types</h2>
+<p>Types of variables:</p>
+<p><img src="images/1.PNG" width="706" /></p>
+<p>Conversion functions:</p>
+<p><img src="images/2.PNG" width="527" /></p>
+<p>Changing to factor variable in R:</p>
+<pre class="r"><code># Changing the PClass INT variable to FACTOR variable
+train.data$Pclass = factor(train.data$Pclass)
+
+# Survived class
+train.data$Survived = factor(train.data$Survived)
+
+str(train.data)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    891 obs. of  12 variables:
+##  $ PassengerId: int  1 2 3 4 5 6 7 8 9 10 ...
+##  $ Survived   : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 2 2 2 1 1 1 1 2 2 ...
+##  $ Pclass     : Factor w/ 3 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;: 3 1 3 1 3 3 1 3 3 2 ...
+##  $ Name       : Factor w/ 891 levels &quot;Abbing, Mr. Anthony&quot;,..: 109 191 358 277 16 559 520 629 417 581 ...
+##  $ Sex        : Factor w/ 2 levels &quot;female&quot;,&quot;male&quot;: 2 1 1 1 2 2 2 2 1 1 ...
+##  $ Age        : num  22 38 26 35 35 NA 54 2 27 14 ...
+##  $ SibSp      : int  1 1 0 1 0 0 0 3 0 1 ...
+##  $ Parch      : int  0 0 0 0 0 0 0 1 2 0 ...
+##  $ Ticket     : Factor w/ 681 levels &quot;110152&quot;,&quot;110413&quot;,..: 524 597 670 50 473 276 86 396 345 133 ...
+##  $ Fare       : num  7.25 71.28 7.92 53.1 8.05 ...
+##  $ Cabin      : Factor w/ 147 levels &quot;A10&quot;,&quot;A14&quot;,&quot;A16&quot;,..: NA 82 NA 56 NA NA 130 NA NA NA ...
+##  $ Embarked   : Factor w/ 3 levels &quot;C&quot;,&quot;Q&quot;,&quot;S&quot;: 3 1 3 3 3 2 3 3 3 1 ...</code></pre>
+<p><br></p>
+</div>
+</div>
+<div id="detecting-missing-values" class="section level1">
+<h1><span class="header-section-number">2</span> Detecting missing values</h1>
+<p>Different ways of detecting missing values:</p>
+<pre class="r"><code># On a specific column
+is.na(train.data$Age)[1:5]</code></pre>
+<pre><code>## [1] FALSE FALSE FALSE FALSE FALSE</code></pre>
+<pre class="r"><code># How many NAs in the column
+sum(is.na(train.data$Age) == TRUE)</code></pre>
+<pre><code>## [1] 177</code></pre>
+<pre class="r"><code># Proportion against total
+sum(is.na(train.data$Age) == TRUE) / nrow(train.data)</code></pre>
+<pre><code>## [1] 0.1986532</code></pre>
+<pre class="r"><code>#
+sapply(train.data, function(df){sum(is.na(df) == TRUE)/ length(df)})</code></pre>
+<pre><code>## PassengerId    Survived      Pclass        Name         Sex         Age       SibSp       Parch      Ticket        Fare       Cabin    Embarked 
+## 0.000000000 0.000000000 0.000000000 0.000000000 0.000000000 0.198653199 0.000000000 0.000000000 0.000000000 0.000000000 0.771043771 0.002244669</code></pre>
+<pre class="r"><code>#
+require(Amelia)</code></pre>
+<pre><code>## Loading required package: Amelia</code></pre>
+<pre><code>## Warning: package &#39;Amelia&#39; was built under R version 3.4.3</code></pre>
+<pre><code>## Loading required package: Rcpp</code></pre>
+<pre><code>## ## 
+## ## Amelia II: Multiple Imputation
+## ## (Version 1.7.4, built: 2015-12-05)
+## ## Copyright (C) 2005-2018 James Honaker, Gary King and Matthew Blackwell
+## ## Refer to http://gking.harvard.edu/amelia/ for more information
+## ##</code></pre>
+<pre class="r"><code>missmap(train.data, main = &quot;Missing map&quot;)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" /><!-- --></p>
+<p><br></p>
+</div>
+<div id="imputing-missing-values" class="section level1">
+<h1><span class="header-section-number">3</span> Imputing missing values</h1>
+<p>There are 3 ways of handling missing values:</p>
+<ul>
+<li>Either we remove the rows that contain missing values</li>
+<li>We create interaction flags</li>
+<li>We impute values</li>
+</ul>
+<p>Imputation is basically the idea of assigning certain value to record based on the information of other records. For example, we could impute based on the global avearage, or we could improve imputation by clustering points, and those points with missing factors, can be imputed with the average of the values of the closest points. When we speak about categorical variables, then instead of taking the mean, you can take the most frequent outcome for example.</p>
+<ul>
+<li>Following a simple example based on categorial variable</li>
+</ul>
+<pre class="r"><code># Show in a table the distribution of values including NAs
+table(train.data$Embarked, useNA = &quot;always&quot;)</code></pre>
+<pre><code>## 
+##    C    Q    S &lt;NA&gt; 
+##  168   77  644    2</code></pre>
+<pre class="r"><code># Assing to the 2 missing values the most frequent value
+train.data$Embarked[which(is.na(train.data$Embarked))] = &#39;S&#39;;
+table(train.data$Embarked, useNA = &quot;always&quot;)</code></pre>
+<pre><code>## 
+##    C    Q    S &lt;NA&gt; 
+##  168   77  646    0</code></pre>
+<ul>
+<li>Following an example based on strings</li>
+</ul>
+<pre class="r"><code># Names as characters
+train.data$Name = as.character(train.data$Name)
+
+# Distribution of words
+table_words = table(unlist(strsplit(train.data$Name, &quot;\\s+&quot;)))
+sort(table_words [grep(&#39;\\.&#39;,names(table_words))],decreasing=TRUE)</code></pre>
+<pre><code>## 
+##       Mr.     Miss.      Mrs.   Master.       Dr.      Rev.      Col.    Major.     Mlle.     Capt. Countess.      Don. Jonkheer.        L.     Lady.      Mme.       Ms.      Sir. 
+##       517       182       125        40         7         6         2         2         2         1         1         1         1         1         1         1         1         1</code></pre>
+<pre class="r"><code># To check which data contains missing values for names
+library(stringr)
+tb = cbind(train.data$Age, str_match(train.data$Name, &quot;[a-zA-Z]+\\.&quot;))
+table(tb[is.na(tb[,1]),2])</code></pre>
+<pre><code>## 
+##     Dr. Master.   Miss.     Mr.    Mrs. 
+##       1       4      36     119      17</code></pre>
+<pre class="r"><code># Calculate the mean value of each different group (in this case for each name title)
+mean.mr = mean(train.data$Age[grepl(&quot; Mr\\.&quot;, train.data$Name) &amp;
+                                  !is.na(train.data$Age)])
+mean.mrs = mean(train.data$Age[grepl(&quot; Mrs\\.&quot;, train.data$Name)
+                                 &amp; !is.na(train.data$Age)])
+mean.dr = mean(train.data$Age[grepl(&quot; Dr\\.&quot;, train.data$Name) &amp;
+                                  !is.na(train.data$Age)])
+mean.miss = mean(train.data$Age[grepl(&quot; Miss\\.&quot;, train.data$Name) &amp;
+                                  !is.na(train.data$Age)])
+mean.master = mean(train.data$Age[grepl(&quot; Master\\.&quot;, train.data$Name) &amp;
+                                  !is.na(train.data$Age)])
+
+# Assigning the missing values
+train.data$Age[grepl(&quot; Mr\\.&quot;, train.data$Name) &amp; is.na(train.data$Age)] = mean.mr
+train.data$Age[grepl(&quot; Mrs\\.&quot;, train.data$Name) &amp; is.na(train.data$Age)] = mean.mrs
+
+train.data$Age[grepl(&quot; Dr\\.&quot;, train.data$Name) &amp; is.na(train.data$Age)] = mean.dr
+train.data$Age[grepl(&quot; Miss\\.&quot;, train.data$Name) &amp; is.na(train.data$Age)] = mean.miss
+train.data$Age[grepl(&quot; Master\\.&quot;, train.data$Name) &amp; is.na(train.data$Age)] = mean.master
+
+# To check which data contains missing values for names
+tb = cbind(train.data$Age, str_match(train.data$Name, &quot;[a-zA-Z]+\\.&quot;))
+table(tb[is.na(tb[,1]),2])</code></pre>
+<pre><code>## &lt; table of extent 0 &gt;</code></pre>
+<p><br></p>
+</div>
+<div id="exploring-and-visualizing-data" class="section level1">
+<h1><span class="header-section-number">4</span> Exploring and visualizing data</h1>
+<pre class="r"><code>barplot(table(train.data$Survived), main=&quot;Passenger Survival&quot;,names= c(&quot;Perished&quot;, &quot;Survived&quot;))</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" /><!-- --></p>
+<pre class="r"><code>barplot(table(train.data$Pclass), main=&quot;Passenger Class&quot;,names= c(&quot;first&quot;, &quot;second&quot;, &quot;third&quot;))</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-10-2.png" /><!-- --></p>
+<pre class="r"><code>barplot(table(train.data$Sex), main=&quot;Passenger Gender&quot;)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-10-3.png" /><!-- --></p>
+<pre class="r"><code>hist(train.data$Age, main=&quot;Passenger Age&quot;, xlab = &quot;Age&quot;)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-10-4.png" /><!-- --></p>
+<pre class="r"><code>barplot(table(train.data$SibSp), main=&quot;Passenger Siblings&quot;)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-10-5.png" /><!-- --></p>
+<pre class="r"><code>barplot(table(train.data$Parch), main=&quot;Passenger Parch&quot;)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-10-6.png" /><!-- --></p>
+<pre class="r"><code>hist(train.data$Fare, main=&quot;Passenger Fare&quot;, xlab = &quot;Fare&quot;)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-10-7.png" /><!-- --></p>
+<pre class="r"><code>barplot(table(train.data$Embarked), main=&quot;Port of Embarkation&quot;)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-10-8.png" /><!-- --></p>
+<pre class="r"><code>counts = table( train.data$Survived, train.data$Sex)
+barplot(counts, col=c(&quot;darkblue&quot;,&quot;red&quot;), legend = c(&quot;Perished&quot;,&quot;Survived&quot;),
+        main = &quot;Passenger Survival by Sex&quot;)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-10-9.png" /><!-- --></p>
+<pre class="r"><code>counts = table( train.data$Survived, train.data$Pclass)
+barplot(counts, col=c(&quot;darkblue&quot;,&quot;red&quot;), legend =c(&quot;Perished&quot;,&quot;Survived&quot;), 
+        main= &quot;Titanic Class Bar Plot&quot; )</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-10-10.png" /><!-- --></p>
+<pre class="r"><code>counts = table( train.data$Sex, train.data$Pclass)
+barplot(counts, col=c(&quot;darkblue&quot;,&quot;red&quot;), legend =rownames(counts),
+          main= &quot;Passenger Gender by Class&quot;)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-10-11.png" /><!-- --></p>
+<pre class="r"><code>hist(train.data$Age[which(train.data$Survived == &quot;0&quot;)], main=&quot;Passenger Age Histogram&quot;,
+          xlab=&quot;Age&quot;, ylab=&quot;Count&quot;, col =&quot;blue&quot;,breaks=seq(0,80,by=2))
+
+hist(train.data$Age[which(train.data$Survived == &quot;1&quot;)], col=&quot;red&quot;,
+          add = T, breaks=seq(0,80,by=2))</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-10-12.png" /><!-- --></p>
+<pre class="r"><code>boxplot(train.data$Age ~ train.data$Survived,
+          main=&quot;Passenger Survival by Age&quot;,
+          xlab=&quot;Survived&quot;, ylab=&quot;Age&quot;)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-10-13.png" /><!-- --></p>
+<pre class="r"><code>################
+train.child = train.data$Survived[train.data$Age &lt; 13]
+length(train.child[which(train.child == 1)] ) / length(train.child)</code></pre>
+<pre><code>## [1] 0.5753425</code></pre>
+<pre class="r"><code>train.youth = train.data$Survived[train.data$Age &gt;= 15 &amp; train.data$Age &lt; 25]
+length(train.youth[which(train.youth == 1)] ) / length(train.youth)</code></pre>
+<pre><code>## [1] 0.4025424</code></pre>
+<pre class="r"><code>train.adult = train.data$Survived[train.data$Age &gt;= 20 &amp; train.data$Age &lt; 65]
+length(train.adult[which(train.adult == 1)] ) / length(train.adult)</code></pre>
+<pre><code>## [1] 0.3651685</code></pre>
+<pre class="r"><code>train.senior = train.data$Survived[train.data$Age &gt;= 65]
+length(train.senior[which(train.senior == 1)] ) / length(train.senior)</code></pre>
+<pre><code>## [1] 0.09090909</code></pre>
+<pre class="r"><code>mosaicplot(train.data$Pclass ~ train.data$Survived,
+            main=&quot;Passenger Survival Class&quot;, color=TRUE,
+            xlab=&quot;Pclass&quot;, ylab=&quot;Survived&quot;)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-10-14.png" /><!-- --></p>
+<p><br></p>
+</div>
+<div id="predicting-passenger-survival" class="section level1">
+<h1><span class="header-section-number">5</span> Predicting Passenger Survival</h1>
+<div id="ctree-algorithm---decision-tree" class="section level2">
+<h2><span class="header-section-number">5.1</span> cTree algorithm - Decision Tree</h2>
+<pre class="r"><code># Split the data - other methods are createDataPartition()
+split.data = function(data, p = 0.7, s = 666){
+   set.seed(s)
+   index = sample(1:dim(data)[1])
+   train = data[index[1:floor(dim(data)[1] * p)], ]
+   test = data[index[((ceiling(dim(data)[1] * p)) +
+                         1):dim(data)[1]], ]
+   return(list(train = train, test = test))
+  }
+
+allset= split.data(train.data, p = 0.7)
+trainset = allset$train
+testset = allset$test
+
+# Building the cTree
+require(&#39;party&#39;)</code></pre>
+<pre><code>## Loading required package: party</code></pre>
+<pre><code>## Warning: package &#39;party&#39; was built under R version 3.4.3</code></pre>
+<pre><code>## Loading required package: grid</code></pre>
+<pre><code>## Loading required package: mvtnorm</code></pre>
+<pre><code>## Warning: package &#39;mvtnorm&#39; was built under R version 3.4.1</code></pre>
+<pre><code>## Loading required package: modeltools</code></pre>
+<pre><code>## Warning: package &#39;modeltools&#39; was built under R version 3.4.1</code></pre>
+<pre><code>## Loading required package: stats4</code></pre>
+<pre><code>## Loading required package: strucchange</code></pre>
+<pre><code>## Warning: package &#39;strucchange&#39; was built under R version 3.4.3</code></pre>
+<pre><code>## Loading required package: zoo</code></pre>
+<pre><code>## Warning: package &#39;zoo&#39; was built under R version 3.4.3</code></pre>
+<pre><code>## 
+## Attaching package: &#39;zoo&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     as.Date, as.Date.numeric</code></pre>
+<pre><code>## Loading required package: sandwich</code></pre>
+<pre><code>## Warning: package &#39;sandwich&#39; was built under R version 3.4.3</code></pre>
+<pre><code>## 
+## Attaching package: &#39;strucchange&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stringr&#39;:
+## 
+##     boundary</code></pre>
+<pre class="r"><code>train.ctree = ctree(Survived ~ Pclass + Sex + Age + SibSp + Fare
+                    + Parch + Embarked, data=trainset)
+train.ctree</code></pre>
+<pre><code>## 
+##   Conditional inference tree with 7 terminal nodes
+## 
+## Response:  Survived 
+## Inputs:  Pclass, Sex, Age, SibSp, Fare, Parch, Embarked 
+## Number of observations:  623 
+## 
+## 1) Sex == {male}; criterion = 1, statistic = 173.672
+##   2) Pclass == {2, 3}; criterion = 1, statistic = 30.951
+##     3) Age &lt;= 9; criterion = 0.993, statistic = 10.923
+##       4) SibSp &lt;= 1; criterion = 0.999, statistic = 14.856
+##         5)*  weights = 10 
+##       4) SibSp &gt; 1
+##         6)*  weights = 13 
+##     3) Age &gt; 9
+##       7)*  weights = 280 
+##   2) Pclass == {1}
+##     8)*  weights = 87 
+## 1) Sex == {female}
+##   9) Pclass == {1, 2}; criterion = 1, statistic = 59.504
+##     10)*  weights = 125 
+##   9) Pclass == {3}
+##     11) Fare &lt;= 23.25; criterion = 0.997, statistic = 12.456
+##       12)*  weights = 85 
+##     11) Fare &gt; 23.25
+##       13)*  weights = 23</code></pre>
+<pre class="r"><code># Plotting
+plot(train.ctree, main=&quot;Conditional inference tree of Titanic Dataset&quot;)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-11-1.png" /><!-- --></p>
+</div>
+<div id="svm" class="section level2">
+<h2><span class="header-section-number">5.2</span> SVM</h2>
+<pre class="r"><code>require(&#39;e1071&#39;)</code></pre>
+<pre><code>## Loading required package: e1071</code></pre>
+<pre><code>## Warning: package &#39;e1071&#39; was built under R version 3.4.3</code></pre>
+<pre class="r"><code>svm.model = svm(Survived ~ Pclass + Sex + Age + SibSp + Fare + Parch +
+                    Embarked, data = trainset, probability = TRUE)</code></pre>
+</div>
+</div>
+<div id="validating-prediction-power" class="section level1">
+<h1><span class="header-section-number">6</span> Validating Prediction Power</h1>
+<div id="confusion-matrix" class="section level2">
+<h2><span class="header-section-number">6.1</span> Confusion matrix</h2>
+<pre class="r"><code># Predict using trained model and new data
+ctree.predict = predict(train.ctree, testset)
+
+require(caret)</code></pre>
+<pre><code>## Loading required package: caret</code></pre>
+<pre><code>## Loading required package: lattice</code></pre>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.4.1</code></pre>
+<pre class="r"><code># Confusion matrix
+u = union(ctree.predict, testset$Survived)
+confusionMatrix(factor(ctree.predict, u), factor(testset$Survived, u))</code></pre>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction   1   0
+##          1  68  16
+##          0  23 160
+##                                          
+##                Accuracy : 0.8539         
+##                  95% CI : (0.8058, 0.894)
+##     No Information Rate : 0.6592         
+##     P-Value [Acc &gt; NIR] : 5.347e-13      
+##                                          
+##                   Kappa : 0.6688         
+##  Mcnemar&#39;s Test P-Value : 0.3367         
+##                                          
+##             Sensitivity : 0.7473         
+##             Specificity : 0.9091         
+##          Pos Pred Value : 0.8095         
+##          Neg Pred Value : 0.8743         
+##              Prevalence : 0.3408         
+##          Detection Rate : 0.2547         
+##    Detection Prevalence : 0.3146         
+##       Balanced Accuracy : 0.8282         
+##                                          
+##        &#39;Positive&#39; Class : 1              
+## </code></pre>
+<pre class="r"><code># 
+train.ctree.pred = predict(train.ctree, testset)
+train.ctree.prob = 1- unlist(treeresponse(train.ctree,testset), use.names=F)[seq(1,nrow(testset)*2,2)]</code></pre>
+</div>
+<div id="rocrauc" class="section level2">
+<h2><span class="header-section-number">6.2</span> ROCR/AUC</h2>
+<pre class="r"><code>require(ROCR)</code></pre>
+<pre><code>## Loading required package: ROCR</code></pre>
+<pre><code>## Loading required package: gplots</code></pre>
+<pre><code>## 
+## Attaching package: &#39;gplots&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     lowess</code></pre>
+<pre class="r"><code># ROCR metrics
+train.ctree.prob.rocr = prediction(train.ctree.prob,testset$Survived)
+
+train.ctree.perf = performance(train.ctree.prob.rocr,&quot;tpr&quot;,&quot;fpr&quot;)
+train.ctree.auc.perf = performance(train.ctree.prob.rocr,
+                        measure = &quot;auc&quot;, x.measure = &quot;cutoff&quot;)
+
+# Plotting
+plot(train.ctree.perf, col=2,colorize=T, main=paste(&quot;AUC:&quot;,
+                        train.ctree.auc.perf@y.values))</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-14-1.png" /><!-- --></p>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
